@@ -63,35 +63,16 @@ function initializeDashboard() {
 function updateDashboardTitle() {
   console.log('Updating dashboard title...');
   
-  // Get the current date
-  const now = new Date();
-  
-  // Determine the current quarter
-  const currentMonth = now.getMonth();
-  let currentQuarter;
-  
-  if (currentMonth >= 0 && currentMonth <= 2) {
-    currentQuarter = 'Q1';
-  } else if (currentMonth >= 3 && currentMonth <= 5) {
-    currentQuarter = 'Q2';
-  } else if (currentMonth >= 6 && currentMonth <= 8) {
-    currentQuarter = 'Q3';
-  } else {
-    currentQuarter = 'Q4';
-  }
-  
-  const currentYear = now.getFullYear();
-  
   // Update the title and subtitle
   const titleElement = document.querySelector('header h1');
   const subtitleElement = document.querySelector('header p');
   
   if (titleElement) {
-    titleElement.textContent = 'Brand Health KPI Dashboard';
+    titleElement.textContent = 'Brand Health KPI Dashboard - T1 Markets';
   }
   
   if (subtitleElement) {
-    subtitleElement.textContent = `${currentQuarter} ${currentYear} Performance Analysis`;
+    subtitleElement.textContent = 'Q1 2025 Performance Analysis';
   }
   
   console.log('Dashboard title updated');

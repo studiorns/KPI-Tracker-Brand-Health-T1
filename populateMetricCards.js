@@ -52,7 +52,7 @@ function populateOverallMetrics(data) {
     'awareness',
     awarenessValue,
     [
-      { label: 'vs Target', value: awarenessVsTarget },
+      { label: 'vs Q1 2025 Target', value: awarenessVsTarget },
       { label: 'vs Q4 2024', value: awarenessVsQ4 },
       { label: 'vs Q1 2024', value: awarenessVsQ1LastYear }
     ]
@@ -63,7 +63,7 @@ function populateOverallMetrics(data) {
     'familiarity',
     familiarityValue,
     [
-      { label: 'vs Target', value: familiarityVsTarget },
+      { label: 'vs Q1 2025 Target', value: familiarityVsTarget },
       { label: 'vs Q4 2024', value: familiarityVsQ4 },
       { label: 'vs Q1 2024', value: familiarityVsQ1LastYear }
     ]
@@ -74,7 +74,7 @@ function populateOverallMetrics(data) {
     'consideration',
     considerationValue,
     [
-      { label: 'vs Target', value: considerationVsTarget },
+      { label: 'vs Q1 2025 Target', value: considerationVsTarget },
       { label: 'vs Q4 2024', value: considerationVsQ4 },
       { label: 'vs Q1 2024', value: considerationVsQ1LastYear }
     ]
@@ -85,7 +85,7 @@ function populateOverallMetrics(data) {
     'intent',
     intentValue,
     [
-      { label: 'vs Target', value: intentVsTarget },
+      { label: 'vs Q1 2025 Target', value: intentVsTarget },
       { label: 'vs Q4 2024', value: intentVsQ4 },
       { label: 'vs Q1 2024', value: intentVsQ1LastYear }
     ]

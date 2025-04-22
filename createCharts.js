@@ -425,7 +425,7 @@ function createComparisonChart(chartId, data, metric) {
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['vs Target', 'vs Q4 2024', 'vs Q1 2024'],
+      labels: ['vs Q1 2025 Target', 'vs Q4 2024', 'vs Q1 2024'],
       datasets: [
         {
           label: 'Difference',
@@ -820,11 +820,11 @@ function createMarketQuadrantChart(chartId, data) {
   });
   
   // Log expected quadrant for each market
-  console.log('EXPECTED MARKET POSITIONS:');
-  console.log('Stars (High Perf, High Growth): India, KSA, Kuwait');
-  console.log('Cash Cows (High Perf, Low Growth): Russia');
-  console.log('Question Marks (Low Perf, High Growth): UK, US, France');
-  console.log('Dogs (Low Perf, Low Growth): Germany, China, Italy');
+    console.log('EXPECTED MARKET POSITIONS:');
+    console.log('Leading Markets (High Perf, High Growth): India, KSA, Kuwait');
+    console.log('Stable Performers (High Perf, Low Growth): Russia');
+    console.log('Growth Opportunities (Low Perf, High Growth): UK, US, France');
+    console.log('Underperforming Markets (Low Perf, Low Growth): Germany, China, Italy');
   
   console.log('FINAL MIDPOINTS:', { 
     xMid, 
@@ -862,13 +862,13 @@ function createMarketQuadrantChart(chartId, data) {
       console.log('RUSSIA QUADRANT CHECK:');
       console.log(`Performance ${russiaData.y.toFixed(2)}% ${russiaData.y >= yMid ? '≥' : '<'} ${yMid.toFixed(2)}% (Midpoint)`);
       console.log(`Growth ${russiaData.x.toFixed(2)}% ${russiaData.x >= xMid ? '≥' : '<'} ${xMid.toFixed(2)}% (Midpoint)`);
-      console.log(`Expected Quadrant: ${russiaData.y >= yMid ? 
-        (russiaData.x >= xMid ? 'Star' : 'Cash Cow') : 
-        (russiaData.x >= xMid ? 'Question Mark' : 'Dog')}`);
-      console.log(`Actual Quadrant: ${
-        stars.includes('Russia') ? 'Star' : 
-        (questionMarks.includes('Russia') ? 'Question Mark' : 
-        (cashCows.includes('Russia') ? 'Cash Cow' : 'Dog'))
+    console.log(`Expected Quadrant: ${russiaData.y >= yMid ? 
+        (russiaData.x >= xMid ? 'Leading Market' : 'Stable Performer') : 
+        (russiaData.x >= xMid ? 'Growth Opportunity' : 'Underperforming Market')}`);
+    console.log(`Actual Quadrant: ${
+        stars.includes('Russia') ? 'Leading Market' : 
+        (questionMarks.includes('Russia') ? 'Growth Opportunity' : 
+        (cashCows.includes('Russia') ? 'Stable Performer' : 'Underperforming Market'))
       }`);
     }
     
@@ -1424,7 +1424,7 @@ function updateMarketCards(metric, sortBy) {
     
     // Create the vs target stat
     const vsTargetClass = item.vsTarget > 0 ? 'positive' : (item.vsTarget < 0 ? 'negative' : 'warning');
-    const vsTargetStat = createCardStat('Vs Target', item.vsTarget > 0 ? `+${item.vsTarget}%` : `${item.vsTarget}%`, vsTargetClass);
+    const vsTargetStat = createCardStat('Vs Q1 2025 Target', item.vsTarget > 0 ? `+${item.vsTarget}%` : `${item.vsTarget}%`, vsTargetClass);
     
     // Create the vs Q4 stat
     const vsQ4Class = item.vsQ4 > 0 ? 'positive' : (item.vsQ4 < 0 ? 'negative' : 'warning');
