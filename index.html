@@ -625,6 +625,103 @@
             box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
         }
         
+        /* Mobile-friendly market cards */
+        .market-cards-container {
+            display: none; /* Hidden by default, shown on mobile */
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        
+        .market-card {
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-300);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .market-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .market-card-header {
+            display: grid;
+            grid-template-columns: 1fr 100px 30px; /* market name, value, toggle button */
+            align-items: center;
+            padding: 12px 16px;
+            background-color: var(--gray-200);
+            border-bottom: 1px solid var(--gray-300);
+        }
+        
+        .market-card-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 1rem;
+        }
+        
+        .market-card-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        .market-card-body {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .market-card-body.expanded {
+            max-height: 500px;
+            padding: 16px;
+        }
+        
+        .market-card-toggle {
+            background: transparent;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .market-card-toggle.expanded {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+        
+        .market-card-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .market-card-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .market-card-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            text-align: center;
+        }
+        
+        .market-card-stat-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
         /* Heatmap styles */
         .heatmap-controls {
             display: flex;
@@ -919,6 +1016,32 @@
             .funnel-name {
                 font-size: 0.9rem;
             }
+            
+            /* Mobile-friendly table controls */
+            .table-controls {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px;
+            }
+            
+            .table-filter, .table-sort {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .filter-select {
+                flex-grow: 1;
+                max-width: 70%;
+            }
+            
+            /* Hide table and show cards on mobile */
+            .market-table-container {
+                display: none;
+            }
+            
+            .market-cards-container {
+                display: flex;
+            }
         }
         
         @media (max-width: 480px) {
@@ -1125,27 +1248,29 @@
             </div>
             
             <div class="tab-content active" id="market-comparison-tab">
-                <div class="market-table-container">
-                    <div class="table-controls">
-                        <div class="table-filter">
-                            <label for="metric-filter">Metric:</label>
-                            <select id="metric-filter" class="filter-select">
-                                <option value="awareness">Awareness</option>
-                                <option value="familiarity">Familiarity</option>
-                                <option value="consideration">Consideration</option>
-                                <option value="intent">Intent</option>
-                            </select>
-                        </div>
-                        <div class="table-sort">
-                            <label for="sort-by">Sort by:</label>
-                            <select id="sort-by" class="filter-select">
-                                <option value="value">Current Value</option>
-                                <option value="vs-target">Vs Target</option>
-                                <option value="vs-q4">Vs Q4 2024</option>
-                                <option value="vs-q1-ly">Vs Q1 2024</option>
-                            </select>
-                        </div>
+                <div class="table-controls">
+                    <div class="table-filter">
+                        <label for="metric-filter">Metric:</label>
+                        <select id="metric-filter" class="filter-select">
+                            <option value="awareness">Awareness</option>
+                            <option value="familiarity">Familiarity</option>
+                            <option value="consideration">Consideration</option>
+                            <option value="intent">Intent</option>
+                        </select>
                     </div>
+                    <div class="table-sort">
+                        <label for="sort-by">Sort by:</label>
+                        <select id="sort-by" class="filter-select">
+                            <option value="value">Current Value</option>
+                            <option value="vs-target">Vs Target</option>
+                            <option value="vs-q4">Vs Q4 2024</option>
+                            <option value="vs-q1-ly">Vs Q1 2024</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Desktop table view -->
+                <div class="market-table-container">
                     <table class="market-table" id="market-comparison-table">
                         <thead>
                             <tr>
@@ -1161,6 +1286,11 @@
                             <!-- Will be populated dynamically -->
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Mobile card view -->
+                <div class="market-cards-container" id="market-cards-container">
+                    <!-- Will be populated dynamically -->
                 </div>
             </div>
             

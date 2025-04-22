@@ -1265,8 +1265,18 @@ function updateHeatmapView(viewType) {
 function initializeMarketComparisonTable() {
   console.log('Initializing market comparison table...');
   
-  // Get the table body
+  // Get the table body and cards container
   const tableBody = document.getElementById('comparison-table-body');
+  const cardsContainer = document.createElement('div');
+  cardsContainer.className = 'market-cards-container';
+  cardsContainer.id = 'market-cards-container';
+  
+  // Insert the cards container after the table container
+  const tableContainer = document.querySelector('.market-table-container');
+  if (tableContainer && tableContainer.parentNode) {
+    tableContainer.parentNode.insertBefore(cardsContainer, tableContainer.nextSibling);
+  }
+  
   if (!tableBody) {
     console.error('Comparison table body not found');
     return;
@@ -1283,15 +1293,18 @@ function initializeMarketComparisonTable() {
   const sortSelect = document.getElementById('sort-by');
   const sortBy = sortSelect ? sortSelect.value : 'value';
   
-  // Update the table with the selected metric and sort option
+  // Update the table and cards with the selected metric and sort option
   updateComparisonTable(metric, sortBy);
+  updateMarketCards(metric, sortBy);
   
   // Set up event listeners for the filters
   if (metricSelect) {
     metricSelect.addEventListener('change', function() {
       const sortSelect = document.getElementById('sort-by');
       const sortBy = sortSelect ? sortSelect.value : 'value';
-      updateComparisonTable(this.value, sortBy);
+      const metric = this.value;
+      updateComparisonTable(metric, sortBy);
+      updateMarketCards(metric, sortBy);
     });
   }
   
@@ -1299,9 +1312,187 @@ function initializeMarketComparisonTable() {
     sortSelect.addEventListener('change', function() {
       const metricSelect = document.getElementById('metric-filter');
       const metric = metricSelect ? metricSelect.value : 'awareness';
-      updateComparisonTable(metric, this.value);
+      const sortBy = this.value;
+      updateComparisonTable(metric, sortBy);
+      updateMarketCards(metric, sortBy);
     });
   }
+}
+
+/**
+ * Update the market cards with the selected metric and sort option
+ * @param {string} metric - The metric to display (awareness, familiarity, consideration, intent)
+ * @param {string} sortBy - The sort option (value, vs-target, vs-q4, vs-q1-ly)
+ */
+function updateMarketCards(metric, sortBy) {
+  console.log(`Updating market cards: metric=${metric}, sortBy=${sortBy}`);
+  
+  // Get the cards container
+  const cardsContainer = document.getElementById('market-cards-container');
+  if (!cardsContainer) {
+    console.error('Market cards container not found');
+    return;
+  }
+  
+  // Get the data from the global brandHealthData object
+  const data = window.brandHealthData || {};
+  
+  // Clear the cards container
+  cardsContainer.innerHTML = '';
+  
+  // Get the markets
+  const markets = Object.keys(data.latestData || {});
+  
+  // Create market data array with all the values we need
+  const marketData = markets.map(market => {
+    const currentValue = parseFloat(data.latestData?.[market]?.[metric] || 0);
+    const target = parseFloat(data.markets?.[market]?.[`${metric}Target`] || 0);
+    const vsTarget = parseFloat(data.markets?.[market]?.[`${metric}VsTarget`] || 0);
+    const vsQ4 = parseFloat(data.markets?.[market]?.[`${metric}VsQ4`] || 0);
+    const vsQ1LastYear = parseFloat(data.markets?.[market]?.[`${metric}VsQ1LastYear`] || 0);
+    
+    return {
+      market,
+      currentValue,
+      target,
+      vsTarget,
+      vsQ4,
+      vsQ1LastYear
+    };
+  });
+  
+  // Sort the market data based on the selected sort option
+  marketData.sort((a, b) => {
+    switch (sortBy) {
+      case 'value':
+        return b.currentValue - a.currentValue;
+      case 'vs-target':
+        return b.vsTarget - a.vsTarget;
+      case 'vs-q4':
+        return b.vsQ4 - a.vsQ4;
+      case 'vs-q1-ly':
+        return b.vsQ1LastYear - a.vsQ1LastYear;
+      default:
+        return 0;
+    }
+  });
+  
+  // Get the metric display name
+  const metricDisplayName = metric.charAt(0).toUpperCase() + metric.slice(1);
+  
+  // Add cards to the container
+  marketData.forEach(item => {
+    // Create the card
+    const card = document.createElement('div');
+    card.className = 'market-card';
+    
+    // Create the card header
+    const cardHeader = document.createElement('div');
+    cardHeader.className = 'market-card-header';
+    
+    // Create the market name
+    const marketName = document.createElement('div');
+    marketName.className = 'market-card-name';
+    marketName.textContent = item.market;
+    
+    // Create the current value
+    const currentValue = document.createElement('div');
+    currentValue.className = 'market-card-value';
+    currentValue.textContent = `${item.currentValue}%`;
+    
+    // Create the toggle button
+    const toggleButton = document.createElement('button');
+    toggleButton.className = 'market-card-toggle';
+    toggleButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
+    toggleButton.setAttribute('aria-label', 'Toggle details');
+    
+    // Add the elements to the header
+    cardHeader.appendChild(marketName);
+    cardHeader.appendChild(currentValue);
+    cardHeader.appendChild(toggleButton);
+    
+    // Create the card body
+    const cardBody = document.createElement('div');
+    cardBody.className = 'market-card-body';
+    
+    // Create the stats container
+    const statsContainer = document.createElement('div');
+    statsContainer.className = 'market-card-stats';
+    
+    // Create the target stat
+    const targetStat = createCardStat('Target', `${item.target}%`);
+    
+    // Create the vs target stat
+    const vsTargetClass = item.vsTarget > 0 ? 'positive' : (item.vsTarget < 0 ? 'negative' : 'warning');
+    const vsTargetStat = createCardStat('Vs Target', item.vsTarget > 0 ? `+${item.vsTarget}%` : `${item.vsTarget}%`, vsTargetClass);
+    
+    // Create the vs Q4 stat
+    const vsQ4Class = item.vsQ4 > 0 ? 'positive' : (item.vsQ4 < 0 ? 'negative' : 'warning');
+    const vsQ4Stat = createCardStat('Vs Q4 2024', item.vsQ4 > 0 ? `+${item.vsQ4}%` : `${item.vsQ4}%`, vsQ4Class);
+    
+    // Create the vs Q1 last year stat
+    const vsQ1LYClass = item.vsQ1LastYear > 0 ? 'positive' : (item.vsQ1LastYear < 0 ? 'negative' : 'warning');
+    const vsQ1LYStat = createCardStat('Vs Q1 2024', item.vsQ1LastYear > 0 ? `+${item.vsQ1LastYear}%` : `${item.vsQ1LastYear}%`, vsQ1LYClass);
+    
+    // Add the stats to the container
+    statsContainer.appendChild(targetStat);
+    statsContainer.appendChild(vsTargetStat);
+    statsContainer.appendChild(vsQ4Stat);
+    statsContainer.appendChild(vsQ1LYStat);
+    
+    // Add the stats container to the body
+    cardBody.appendChild(statsContainer);
+    
+    // Add the header and body to the card
+    card.appendChild(cardHeader);
+    card.appendChild(cardBody);
+    
+    // Add the card to the container
+    cardsContainer.appendChild(card);
+    
+    // Add event listener to the toggle button
+    toggleButton.addEventListener('click', function() {
+      // Toggle the expanded class on the body
+      cardBody.classList.toggle('expanded');
+      
+      // Toggle the expanded class on the button
+      this.classList.toggle('expanded');
+    });
+  });
+  
+  // Add a title to the cards container
+  const title = document.createElement('h3');
+  title.textContent = `${metricDisplayName} by Market`;
+  title.style.marginBottom = '16px';
+  cardsContainer.insertBefore(title, cardsContainer.firstChild);
+}
+
+/**
+ * Create a stat element for the market card
+ * @param {string} label - The label for the stat
+ * @param {string} value - The value for the stat
+ * @param {string} valueClass - Optional class for the value
+ * @returns {HTMLElement} - The stat element
+ */
+function createCardStat(label, value, valueClass) {
+  const stat = document.createElement('div');
+  stat.className = 'market-card-stat';
+  
+  const labelElement = document.createElement('div');
+  labelElement.className = 'market-card-stat-label';
+  labelElement.textContent = label;
+  
+  const valueElement = document.createElement('div');
+  valueElement.className = 'market-card-stat-value';
+  if (valueClass) {
+    valueElement.classList.add(valueClass);
+  }
+  valueElement.textContent = value;
+  
+  stat.appendChild(labelElement);
+  stat.appendChild(valueElement);
+  
+  return stat;
 }
 
 /**
