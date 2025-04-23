@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Health KPI Dashboard - Validation Tool</title>
+  <style>
+    :root {
+      --primary: #4285f4;
+      --success: #34a853;
+      --warning: #fbbc04;
+      --danger: #ea4335;
+      --dark: #202124;
+      --light: #f8f9fa;
+      --text: #e0e0e0;
+      --border: #3c4043;
+      --radius: 8px;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--dark);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #2d2d2d;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    header {
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    
+    h1, h2, h3, h4 {
+      color: var(--light);
+      margin-top: 0;
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    h2 {
+      font-size: 24px;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h3 {
+      font-size: 20px;
+      margin-top: 25px;
+      margin-bottom: 15px;
+    }
+    
+    h4 {
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .discrepancy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #333;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    .discrepancy-table th,
+    .discrepancy-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .discrepancy-table th {
+      background-color: #444;
+      font-weight: 600;
+      color: var(--light);
+    }
+    
+    .discrepancy-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .discrepancy-table tr:hover td {
+      background-color: #3a3a3a;
+    }
+    
+    .success-message {
+      background-color: rgba(52, 168, 83, 0.2);
+      color: var(--success);
+      padding: 15px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--success);
+      margin-bottom: 20px;
+    }
+    
+    .error-message {
+      background-color: rgba(234, 67, 53, 0.2);
+      color: var(--danger);
+      padding: 15px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--danger);
+      margin-bottom: 20px;
+    }
+    
+    .warning-message {
+      background-color: rgba(251, 188, 4, 0.2);
+      color: var(--warning);
+      padding: 15px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--warning);
+      margin-bottom: 20px;
+    }
+    
+    .info-message {
+      background-color: rgba(66, 133, 244, 0.2);
+      color: var(--primary);
+      padding: 15px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+      margin-bottom: 20px;
+    }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+    
+    .loading::after {
+      content: '';
+      width: 30px;
+      height: 30px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    ul {
+      padding-left: 20px;
+    }
+    
+    li {
+      margin-bottom: 10px;
+    }
+    
+    .actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #3367d6;
+    }
+    
+    button.secondary {
+      background-color: #555;
+    }
+    
+    button.secondary:hover {
+      background-color: #666;
+    }
+    
+    .fix-button {
+      background-color: var(--success);
+    }
+    
+    .fix-button:hover {
+      background-color: #2d9748;
+    }
+    
+    .validation-section {
+      margin-bottom: 40px;
+    }
+    
+    .validation-results {
+      margin-top: 20px;
+    }
+    
+    .code-block {
+      background-color: #333;
+      padding: 15px;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-bottom: 20px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    
+    .code-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    
+    .download-button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      margin-top: 15px;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    
+    .download-button:hover {
+      background-color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Brand Health KPI Dashboard - Validation Tool</h1>
+      <p>This tool validates the "vs target" comparisons in the CSV data against the hardcoded values in the code.</p>
+    </header>
+    
+    <div class="validation-section">
+      <h2>Validation Results</h2>
+      <div id="validation-results" class="validation-results">
+        <div class="loading"></div>
+        <p>Loading validation results...</p>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button id="refresh-button">Refresh Validation</button>
+      <button id="fix-intent-values" class="fix-button">Fix Intent Values</button>
+      <button id="back-button" class="secondary" onclick="window.location.href='index.html'">Back to Dashboard</button>
+    </div>
+    
+    <div id="fix-result" class="validation-section">
+      <!-- Results of fixing intent values will be displayed here -->
+    </div>
+    
+    <div class="validation-section">
+      <h2>Direct CSV Parser</h2>
+      <p>This tool demonstrates how to directly parse the CSV file instead of using hardcoded values. This can help prevent discrepancies between the CSV data and the code.</p>
+      
+      <div class="actions" style="margin-bottom: 20px;">
+        <button id="test-csv-parser">Test Direct CSV Parser</button>
+      </div>
+      
+      <div id="csv-parser-result" class="validation-results">
+        <!-- Results of testing the direct CSV parser will be displayed here -->
+      </div>
+    </div>
+    
+    <div class="validation-section">
+      <h2>Explanation</h2>
+      <p>This validation tool compares the data in the CSV file with the hardcoded values in the code. It checks:</p>
+      <ul>
+        <li>If the current values match between the CSV and code</li>
+        <li>If the "vs target" comparisons match between the CSV and code</li>
+        <li>If the "vs Q4" comparisons match between the CSV and code</li>
+        <li>If the "vs Q1 last year" comparisons match between the CSV and code</li>
+        <li>If the calculations are correct (current value - target value = vs target)</li>
+      </ul>
+      
+      <h3>How to Fix Discrepancies</h3>
+      <p>If discrepancies are found, you can:</p>
+      <ol>
+        <li>Use the "Fix" buttons to automatically update the code with the correct values</li>
+        <li>Manually update the values in the <code>populateMetricCards.js</code> file</li>
+        <li>Update the code to directly parse the CSV file instead of using hardcoded values</li>
+      </ol>
+      
+      <h3>CSV vs Code Data Flow</h3>
+      <p>Currently, the application doesn't directly parse the CSV file. Instead, it uses hardcoded data in the <code>parseCSVData()</code> function in <code>populateMetricCards.js</code>. This can lead to discrepancies if the CSV file is updated but the code is not.</p>
+      
+      <div class="info-message">
+        <p><strong>Recommendation:</strong> Consider updating the code to directly parse the CSV file to prevent future discrepancies.</p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="validateComparisons.js"></script>
+  <script src="fixIntentValues.js"></script>
+  <script src="directCSVParser.js"></script>
+  <script src="updateHeatmap.js"></script>
+  <script src="updateComparisonTable.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add event listener for the refresh button
+      const refreshButton = document.getElementById('refresh-button');
+      if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+          // Clear the results container
+          const resultsContainer = document.getElementById('validation-results');
+          resultsContainer.innerHTML = '<div class="loading"></div><p>Loading validation results...</p>';
+          
+          // Run the validation again
+          setTimeout(runValidation, 500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
